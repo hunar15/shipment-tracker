@@ -19,6 +19,7 @@
     },
     "permissions": [
         "activeTab",
-        "storage"
+        "storage",
+        "http://www.bpost2.be/"
     ]
 }
