@@ -1,6 +1,7 @@
 import Html exposing (div, button, text, Html)
 import Debug
 import Http
+import Xml.Decode exposing (decode)
 
 main =
   Html.program { subscriptions = subscriptions
@@ -49,7 +50,7 @@ update msg model =
         let
             loggedData = Debug.log "Data" data
         in
-            ({ model | responseData = loggedData }, Cmd.none)
+            ({ model | responseData = loggedData |> toString }, Cmd.none)
 
     XmlResponse (Err _) ->
             ({ model | responseData = "Error encountered"}, Cmd.none)
