@@ -2,11 +2,12 @@ module Models.Types exposing (..)
 
 import Xml.Decode as XD
 import Xml.Decode.Extra exposing (..)
+import Date exposing (Date)
 
 type StatusMessage = StatusMessage String
 
 type Status =
-    Status { dateTime : String
+    Status { dateTime : Date
            , statusMessage : StatusMessage
            , location : Maybe String
            }
@@ -47,15 +48,15 @@ statusDecoder =
             XD.path ["location"] (XD.single XD.string)
                 |> XD.maybe
 
-        dateTimeDecoder : XD.Decoder String
+        dateTimeDecoder : XD.Decoder Date
         dateTimeDecoder =
-            XD.path ["dateTime"] (XD.single XD.string)
+            XD.path ["dateTime"] (XD.single XD.date)
 
         statusDecoder : XD.Decoder StatusMessage
         statusDecoder =
             XD.path ["status"] (XD.single statusMessageDecoder)
 
-        lambda : String -> StatusMessage -> (Maybe String) -> Status
+        lambda : Date -> StatusMessage -> (Maybe String) -> Status
         lambda dateTime status maybeLocation =
             Status { dateTime = dateTime
                    , statusMessage = status
