@@ -1,7 +1,7 @@
 module Main exposing (..)
 
-import Html exposing (ul, li, button, text, Html)
-import Html.Attributes exposing (class)
+import Html exposing (ul, li, button, text, Html, h5, div)
+import Html.Attributes exposing (class, classList)
 import Debug exposing (log)
 import Http
 
@@ -75,24 +75,28 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
--- getXmlResponse : Cmd Msg
--- getXmlResponse =
---     let
---         trackingUrl = getBpostURL "312014853400000769000219190151"
---     in
---         Http.send XmlResponse (Http.getString trackingUrl)
-
 view : Model -> Html Msg
 view model =
-  -- let
-  --     statusToDiv : Bpost.Status -> Html Msg
-  --     statusToDiv (Bpost.Status status) =
-  --         case status.statusMessage of
-  --             Bpost.StatusMessage messageString ->
-  --                 li [ class "list-group-item" ] [ text messageString ]
-  -- in
-  --     ul [ class "list-group" ] (List.map statusToDiv model.statusList)
-    ul [] []
+  let
+      createRow : Order -> Html Msg
+      createRow _ =
+          li [ class "list-group-item" ]
+             [ div [ class "row" ]
+                   [ div [ class "col-4" ]
+                         [ text "col 1" ]
+                   , div [ class "col-4" ]
+                         [ text "col 2" ]
+                   , div [ class "col-4" ]
+                         [ text "col 3" ]
+              ]
+             ]
+  in
+      div [ classList [ ("panel", True)
+                      , ("panel-default", True)]
+          ]
+          [ ul [ class "list-group" ]
+                (List.map createRow model)
+          ]
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
