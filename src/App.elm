@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (ul, li, button, text, Html)
 import Html.Attributes exposing (class)
-import Debug
+import Debug exposing (log)
 import Http
 
 import Models.Types as Bpost
@@ -13,57 +13,102 @@ main =
                , update = update
                , init = init }
 
-type alias Model =
-    { statusList : List Bpost.Status }
+type alias Order = { trackingId : String
+                   , statusList : List Bpost.Status
+                   }
+
+type alias Model = List Order
+
+type alias TrackingId = String
+
+type Msg = XmlResponse TrackingId (Result Http.Error String)
 
 init : (Model, Cmd Msg)
-init = ( { statusList = [] }
-       , getXmlResponse
-       )
+init =
+    let
+        initialOrders = createInitOrders
+    in
+        ( initialOrders
+        , fetchDataForOrders initialOrders
+        )
+
+createInitOrders : List Order
+createInitOrders =
+    let
+        trackingIds =
+            [ "312014853400000769000219190151"
+            , "312014853400000769000216070185"
+            ]
+
+        createOrderForTrackingId : String -> Order
+        createOrderForTrackingId id =
+            { trackingId = id
+            , statusList = []
+            }
+    in
+        List.map createOrderForTrackingId trackingIds
+
+fetchDataForOrders : List Order -> Cmd Msg
+fetchDataForOrders orders =
+    let
+        createTrackingUrl : String -> String
+        createTrackingUrl trackingId =
+            "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
+
+        createCmdForTrackingId : String -> Cmd Msg
+        createCmdForTrackingId trackingId =
+            Http.send
+                (XmlResponse trackingId)
+                (Http.getString (createTrackingUrl trackingId))
+
+        trackingIds : List Order -> List String
+        trackingIds orders =
+            List.map .trackingId orders
+
+        listOfCmds : List Order -> List (Cmd Msg)
+        listOfCmds orders =
+            List.map createCmdForTrackingId (trackingIds orders)
+    in
+        Cmd.batch (listOfCmds orders)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-getXmlResponse : Cmd Msg
-getXmlResponse =
-    let
-        trackingUrl = getBpostURL "312014853400000769000219190151"
-    in
-        Http.send XmlResponse (Http.getString trackingUrl)
+-- getXmlResponse : Cmd Msg
+-- getXmlResponse =
+--     let
+--         trackingUrl = getBpostURL "312014853400000769000219190151"
+--     in
+--         Http.send XmlResponse (Http.getString trackingUrl)
 
 view : Model -> Html Msg
 view model =
-  let
-      statusToDiv : Bpost.Status -> Html Msg
-      statusToDiv (Bpost.Status status) =
-          case status.statusMessage of
-              Bpost.StatusMessage messageString ->
-                  li [ class "list-group-item" ] [ text messageString ]
-  in
-      ul [ class "list-group" ] (List.map statusToDiv model.statusList)
-
-
-type Msg = XmlResponse (Result Http.Error String)
-
- -- TODO organize into different folders
-
-getBpostURL : String -> String
-getBpostURL trackCode =
-    "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackCode
+  -- let
+  --     statusToDiv : Bpost.Status -> Html Msg
+  --     statusToDiv (Bpost.Status status) =
+  --         case status.statusMessage of
+  --             Bpost.StatusMessage messageString ->
+  --                 li [ class "list-group-item" ] [ text messageString ]
+  -- in
+  --     ul [ class "list-group" ] (List.map statusToDiv model.statusList)
+    ul [] []
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    XmlResponse (Ok data) ->
+    XmlResponse trackingId (Ok data) ->
         let
             parseResult = Bpost.parseHttpResponse data
+            loggedData = log "data" data
+            loggedId = log "trackingId" trackingId
         in
-            case parseResult of
-                Ok parsedList ->
-                    ({ model | statusList = parsedList }, Cmd.none)
-                Err _ ->
+            case (loggedData, loggedId, parseResult) of
+                (_, _,Ok parsedList) ->
+               --     ({ model | statusList = parsedList }, Cmd.none)
+                    (model, Cmd.none)
+                (_, _, Err _) ->
                     (model, Cmd.none)
 
-    XmlResponse (Err _) ->
+    XmlResponse _ (Err _) ->
             (model, Cmd.none)
