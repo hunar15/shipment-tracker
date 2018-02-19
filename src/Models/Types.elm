@@ -56,8 +56,13 @@ parseHttpResponse responseText =
         XD.run statusListDecoder responseText
 
 mostRecentStatus : List Status -> Maybe Status
-mostRecentStatus _ =
-    -- TODO: implement this
-    Nothing
+mostRecentStatus statusList =
+    let
+        latestDateComparer status =
+            status.dateTime
+                |> Date.toTime
+                |> negate
 
-
+    in
+        List.sortBy latestDateComparer statusList
+            |> List.head
