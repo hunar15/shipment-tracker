@@ -1,6 +1,7 @@
 module Main exposing (..)
 
-import Html exposing (div, button, text, Html)
+import Html exposing (ul, li, button, text, Html)
+import Html.Attributes exposing (class)
 import Debug
 import Http
 
@@ -38,9 +39,9 @@ view model =
       statusToDiv (Bpost.Status status) =
           case status.statusMessage of
               Bpost.StatusMessage messageString ->
-                  div [] [ text messageString ]
+                  li [ class "list-group-item" ] [ text messageString ]
   in
-      div [] (List.map statusToDiv model.statusList)
+      ul [ class "list-group" ] (List.map statusToDiv model.statusList)
 
 
 type Msg = XmlResponse (Result Http.Error String)
