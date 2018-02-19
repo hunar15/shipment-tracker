@@ -32,7 +32,7 @@ suite =
                            """
 
                        expectedDateResult : Result String Date
-                       expectedDateResult = Date.fromString "07-02-2018 15:30:29"
+                       expectedDateResult = Bpost.fromString "07-02-2018 15:30:29"
                    in
                        case expectedDateResult of
                            Ok parsedDate ->
@@ -122,6 +122,26 @@ suite =
                                         "Parse failed: " ++ (toString error)
                                     )
 
+             , test "can parse dates" <|
+                  \_ ->
+                      let
+                          dateString = "28-01-2018 16:27:00"
 
+                          parsedDate : Result String Date
+                          parsedDate = Bpost.fromString dateString
+                      in
+                          case parsedDate of
+                                Ok date ->
+                                    Expect.all
+                                        [ \d -> Expect.equal (Date.day d) 28
+                                        , \d -> Expect.equal (Date.month d) Date.Jan
+                                        , \d -> Expect.equal (Date.year d) 2018
+                                        , \d -> Expect.equal (Date.hour d) 16
+                                        , \d -> Expect.equal (Date.minute d) 27
+                                        , \d -> Expect.equal (Date.second d) 0
+                                        ]
+                                        date
+
+                                Err error -> Expect.fail error
              ]
         ]

@@ -4,6 +4,9 @@ import Xml.Decode as XD
 import Xml.Decode.Extra exposing (..)
 import Date exposing (Date)
 
+import DateParser
+import Date.Extra.Config.Config_en_us as DateConfig
+
 type alias StatusMessage = String
 
 type alias Status =
@@ -12,6 +15,24 @@ type alias Status =
     , location : Maybe String
     }
 
+fromString : String -> Result String Date
+fromString dateString =
+    DateParser.parse DateConfig.config "%d-%m-%Y %H:%M:%S" dateString
+                |> (Result.mapError toString)
+
+dateDecoder : XD.Decoder Date
+dateDecoder =
+    let
+        resultToDecoder : Result String Date -> XD.Decoder Date
+        resultToDecoder dateResult =
+            case dateResult of
+                Ok date -> XD.succeed date
+                Err errorString -> XD.fail (XD.SimpleError (XD.Unparsable errorString))
+
+    in
+        XD.string
+            |> XD.map fromString
+            |> XD.andThen resultToDecoder
 
 statusMessageDecoder : XD.Decoder StatusMessage
 statusMessageDecoder =
@@ -28,7 +49,7 @@ statusDecoder =
 
         dateTimeDecoder : XD.Decoder Date
         dateTimeDecoder =
-            XD.path ["dateTime"] (XD.single XD.date)
+            XD.path ["dateTime"] (XD.single dateDecoder)
 
         statusDecoder : XD.Decoder StatusMessage
         statusDecoder =
