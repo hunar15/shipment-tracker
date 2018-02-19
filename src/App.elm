@@ -4,7 +4,7 @@ import Html exposing (div, button, text, Html)
 import Debug
 import Http
 
-import Models.Types exposing (..)
+import Models.Types as Bpost
 
 main =
   Html.program { subscriptions = subscriptions
@@ -13,10 +13,10 @@ main =
                , init = init }
 
 type alias Model =
-    { responseData : String }
+    { statusList : List Bpost.Status }
 
 init : (Model, Cmd Msg)
-init = ( { responseData = "" }
+init = ( { statusList = [] }
        , getXmlResponse
        )
 
@@ -33,9 +33,14 @@ getXmlResponse =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ div [] [ text model.responseData ]
-    ]
+  let
+      statusToDiv : Bpost.Status -> Html Msg
+      statusToDiv (Bpost.Status status) =
+          case status.statusMessage of
+              Bpost.StatusMessage messageString ->
+                  div [] [ text messageString ]
+  in
+      div [] (List.map statusToDiv model.statusList)
 
 
 type Msg = XmlResponse (Result Http.Error String)
@@ -51,9 +56,13 @@ update msg model =
   case msg of
     XmlResponse (Ok data) ->
         let
-            loggedData = Debug.log "Data" data
+            parseResult = Bpost.parseHttpResponse data
         in
-            ({ model | responseData = loggedData |> toString }, Cmd.none)
+            case parseResult of
+                Ok parsedList ->
+                    ({ model | statusList = parsedList }, Cmd.none)
+                Err _ ->
+                    (model, Cmd.none)
 
     XmlResponse (Err _) ->
-            ({ model | responseData = "Error encountered"}, Cmd.none)
+            (model, Cmd.none)
