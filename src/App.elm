@@ -3,8 +3,8 @@ module Main exposing (..)
 import Html exposing (div, button, text, Html)
 import Debug
 import Http
-import Xml.Decode exposing (decode)
-import Models.Types
+
+import Models.Types exposing (..)
 
 main =
   Html.program { subscriptions = subscriptions

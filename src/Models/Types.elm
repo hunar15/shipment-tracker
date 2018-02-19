@@ -13,24 +13,6 @@ type Status =
            }
 
 
--- type Status = Status String
-
--- type DeliveryStatus =
---     DeliveryStatus
---     { statusList : List Status }
-
--- type Parcel =
---     Parcel
---     { trackingBarcode : String
---     , deliveryStatus : DeliveryStatus
---     }
-
--- type Parcels =
---     Parcels
---     { parcel : Parcel
---     }
-
-
 statusMessageDecoder : XD.Decoder StatusMessage
 statusMessageDecoder =
     let
@@ -67,3 +49,12 @@ statusDecoder =
             |: dateTimeDecoder
             |: statusDecoder
             |: locationDecoder
+
+parseHttpResponse : String -> Result String (List Status)
+parseHttpResponse responseText =
+    let
+        statusListDecoder : XD.Decoder (List Status)
+        statusListDecoder =
+            XD.path ["parcel", "deliveryStatus", "status"] (XD.list statusDecoder)
+    in
+        XD.run statusListDecoder responseText
