@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (ul, li, button, text, Html, h5, div)
+import Html exposing (ul, li, button, text, Html, h5, div, small)
 import Html.Attributes exposing (class, classList)
 import Debug exposing (log)
 import Http
@@ -79,16 +79,19 @@ view : Model -> Html Msg
 view model =
   let
       createRow : Order -> Html Msg
-      createRow _ =
+      createRow order =
           li [ class "list-group-item" ]
              [ div [ class "row" ]
-                   [ div [ class "col-4" ]
-                         [ text "col 1" ]
-                   , div [ class "col-4" ]
-                         [ text "col 2" ]
-                   , div [ class "col-4" ]
-                         [ text "col 3" ]
-              ]
+                   [ div [ class "col-6" ]
+                         [ small []
+                                 [ text order.trackingId ]
+                         ]
+                   , div [ class "col-6" ]
+                         [ text ((Maybe.withDefault "no message available")
+                                     (Maybe.map .statusMessage (Bpost.mostRecentStatus order.statusList))
+                                )
+                         ]
+                   ]
              ]
   in
       div [ classList [ ("panel", True)

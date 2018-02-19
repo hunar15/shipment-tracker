@@ -4,22 +4,18 @@ import Xml.Decode as XD
 import Xml.Decode.Extra exposing (..)
 import Date exposing (Date)
 
-type StatusMessage = StatusMessage String
+type alias StatusMessage = String
 
-type Status =
-    Status { dateTime : Date
-           , statusMessage : StatusMessage
-           , location : Maybe String
-           }
+type alias Status =
+    { dateTime : Date
+    , statusMessage : StatusMessage
+    , location : Maybe String
+    }
 
 
 statusMessageDecoder : XD.Decoder StatusMessage
 statusMessageDecoder =
-    let
-        strExtractor : XD.Decoder String
-        strExtractor = XD.path ["en"] (XD.single XD.string)
-    in
-        XD.map (\s -> StatusMessage s) strExtractor
+    XD.path ["en"] (XD.single XD.string)
 
 statusDecoder : XD.Decoder Status
 statusDecoder =
@@ -40,10 +36,10 @@ statusDecoder =
 
         lambda : Date -> StatusMessage -> (Maybe String) -> Status
         lambda dateTime status maybeLocation =
-            Status { dateTime = dateTime
-                   , statusMessage = status
-                   , location = maybeLocation
-                   }
+            { dateTime = dateTime
+            , statusMessage = status
+            , location = maybeLocation
+            }
     in
         XD.succeed (lambda)
             |: dateTimeDecoder
@@ -58,3 +54,10 @@ parseHttpResponse responseText =
             XD.path ["parcel", "deliveryStatus", "status"] (XD.list statusDecoder)
     in
         XD.run statusListDecoder responseText
+
+mostRecentStatus : List Status -> Maybe Status
+mostRecentStatus _ =
+    -- TODO: implement this
+    Nothing
+
+

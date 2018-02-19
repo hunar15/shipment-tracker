@@ -38,10 +38,10 @@ suite =
                            Ok parsedDate ->
                                Expect.equal
                                    (XD.run Bpost.statusDecoder xmlString)
-                                   (Ok (Status { dateTime = parsedDate
-                                               , statusMessage = StatusMessage "Parcel is handled"
-                                               , location = Just "Belgium"
-                                               }))
+                                   (Ok { dateTime = parsedDate
+                                       , statusMessage = "Parcel is handled"
+                                       , location = Just "Belgium"
+                                       })
                            Err _ ->
                                Expect.fail "Date should have been parseable"
 
@@ -57,7 +57,8 @@ suite =
                      in
                          Expect.equal
                              (XD.run Bpost.statusMessageDecoder xmlString)
-                             (Ok (Bpost.StatusMessage "Parcel is handled"))
+                             (Ok "Parcel is handled")
+
              , test "can extract list of statuses from http string response" <|
                  \_ ->
                      let
