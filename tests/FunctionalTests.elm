@@ -1,11 +1,12 @@
 module FunctionalTests exposing (..)
 
-
 import Expect exposing (Expectation)
 import Test exposing (..)
-import Models.Types as Bpost exposing (..)
 
 import Date exposing (Date)
+
+import Models.Types as Bpost exposing (..)
+import Main as Main exposing (updateOrder)
 
 
 suite : Test
@@ -25,9 +26,19 @@ suite =
             , location = Just "in"
             }
 
+
+        orderList : List Main.Order
+        orderList =
+            [ { trackingId = "o1"
+              , statusList = [ status1 ]
+              }
+            , { trackingId = "o2"
+              , statusList = [ status2, status1 ]
+              }
+            ]
     in
-        describe "Model.Types"
-            [ describe "mostRecentStatus"
+        describe "Tests on common functions"
+            [ describe "Models.Types.mostRecentStatus"
                   [ test "fetch the most recent status from a non-empty list of statuses " <|
                         \_ ->
                             Expect.all
@@ -37,5 +48,23 @@ suite =
                   , test "returns Nothing for an empty list of statuses" <|
                         \_ ->
                             Expect.equal (mostRecentStatus []) Nothing
+                  ]
+            , describe "App.updateOrder" <|
+                  [ test "updates an existing order i.e order with same tracking id" <|
+                        \_ ->
+                            let
+                                updatedOrder =
+                                    { trackingId = "o1"
+                                    , statusList = [ status1, status2 ]
+                                    }
+                            in
+                                Expect.equal
+                                    (Main.updateOrder orderList updatedOrder)
+                                    [ updatedOrder
+                                    , { trackingId = "o2"
+                                      , statusList = [ status2, status1 ]
+                                      }
+                                    ]
+
                   ]
             ]

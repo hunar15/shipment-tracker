@@ -109,13 +109,31 @@ update msg model =
             parseResult = Bpost.parseHttpResponse data
             loggedData = log "data" data
             loggedId = log "trackingId" trackingId
+
         in
             case (loggedData, loggedId, parseResult) of
                 (_, _,Ok parsedList) ->
-               --     ({ model | statusList = parsedList }, Cmd.none)
-                    (model, Cmd.none)
-                (_, _, Err _) ->
+                    (updateOrder
+                         model
+                         { trackingId = trackingId
+                         , statusList = parsedList
+                         }, Cmd.none)
+                (_, _, Err error) ->
+                    log error
                     (model, Cmd.none)
 
     XmlResponse _ (Err _) ->
             (model, Cmd.none)
+
+updateOrder : List Order -> Order -> List Order
+updateOrder orderList newOrder =
+    let
+        updater : Order -> Order
+        updater oldOrder =
+            if oldOrder.trackingId == newOrder.trackingId then
+                newOrder
+            else
+                oldOrder
+
+    in
+        List.map updater orderList
