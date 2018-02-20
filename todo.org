@@ -1,0 +1,9 @@
+* Necessary functionality for 1.0
+  - [ ] implement storage / sync behavior
+    - [ ] loading of order ids (and possibly latest statuses) being tracked upon startup
+    - [ ] explicit button to sync with storage
+  - [ ] ability to track new orders through a form
+  - [ ] support DHL (for bertrand) / postNl (for lently)
+* UI tweaks
+  - [ ] show a progress animation (spiral) when fetching the statuses
+  - [ ] explicit fetching of statuses for single order or all
