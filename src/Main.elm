@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html exposing (ul, li, button, text, Html, h5, div, small)
 import Html.Attributes exposing (class, classList)
@@ -21,25 +21,16 @@ type alias Model = List Order
 
 type alias TrackingId = String
 
-type Msg = XmlResponse TrackingId (Result Http.Error String)
+type Msg =
+    XmlResponse TrackingId (Result Http.Error String)
+    | LoadTrackingInformation (List TrackingId)
 
 init : (Model, Cmd Msg)
-init =
-    let
-        initialOrders = createInitOrders
-    in
-        ( initialOrders
-        , fetchDataForOrders initialOrders
-        )
+init = ([], Cmd.none)
 
-createInitOrders : List Order
-createInitOrders =
+createInitOrders : List TrackingId ->  List Order
+createInitOrders trackingIds =
     let
-        trackingIds =
-            [ "312014853400000769000219190151"
-            , "312014853400000769000216070185"
-            ]
-
         createOrderForTrackingId : String -> Order
         createOrderForTrackingId id =
             { trackingId = id
@@ -71,9 +62,13 @@ fetchDataForOrders orders =
     in
         Cmd.batch (listOfCmds orders)
 
+--- SUBSCRIPTIONS ---
+
+port loadTrackingIds : (List TrackingId -> msg) -> Sub msg
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  loadTrackingIds LoadTrackingInformation
 
 view : Model -> Html Msg
 view model =
@@ -124,6 +119,14 @@ update msg model =
 
     XmlResponse _ (Err _) ->
             (model, Cmd.none)
+
+    LoadTrackingInformation trackingIds ->
+         let
+             initialOrders = createInitOrders trackingIds
+         in
+             ( initialOrders
+             , fetchDataForOrders initialOrders
+             )
 
 updateOrder : List Order -> Order -> List Order
 updateOrder orderList newOrder =
