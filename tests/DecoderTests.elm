@@ -1,14 +1,17 @@
 module DecoderTests exposing (..)
 
+import Date exposing (Date)
+
 import Expect exposing (Expectation)
 import Test exposing (..)
-import Models.Types as Bpost exposing (..)
 
-import Date exposing (Date)
 
 import Xml.Decode as XD exposing ( path
                            , single
                            , string )
+
+import Decoders exposing (..)
+import Model exposing (..)
 
 suite : Test
 suite =
@@ -32,12 +35,12 @@ suite =
                            """
 
                        expectedDateResult : Result String Date
-                       expectedDateResult = Bpost.fromString "07-02-2018 15:30:29"
+                       expectedDateResult = Decoders.fromString "07-02-2018 15:30:29"
                    in
                        case expectedDateResult of
                            Ok parsedDate ->
                                Expect.equal
-                                   (XD.run Bpost.statusDecoder xmlString)
+                                   (XD.run Decoders.statusDecoder xmlString)
                                    (Ok { dateTime = parsedDate
                                        , statusMessage = "Parcel is handled"
                                        , location = Just "Belgium"
@@ -56,7 +59,7 @@ suite =
                              """
                      in
                          Expect.equal
-                             (XD.run Bpost.statusMessageDecoder xmlString)
+                             (XD.run Decoders.statusMessageDecoder xmlString)
                              (Ok "Parcel is handled")
 
              , test "can extract list of statuses from http string response" <|
@@ -110,9 +113,9 @@ suite =
 </parcels>
                              """
 
-                         parseResult : Result String (List Bpost.Status)
+                         parseResult : Result String (List Status)
                          parseResult  =
-                                Bpost.parseHttpResponse httpResponse
+                                Decoders.parseHttpResponse httpResponse
 
                      in
                          case parseResult of
@@ -128,7 +131,7 @@ suite =
                           dateString = "28-01-2018 16:27:00"
 
                           parsedDate : Result String Date
-                          parsedDate = Bpost.fromString dateString
+                          parsedDate = Decoders.fromString dateString
                       in
                           case parsedDate of
                                 Ok date ->

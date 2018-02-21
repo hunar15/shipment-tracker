@@ -1,19 +1,13 @@
-module Models.Types exposing (..)
+module Decoders exposing (..)
+
+import Date exposing (Date)
 
 import Xml.Decode as XD
 import Xml.Decode.Extra exposing (..)
-import Date exposing (Date)
-
 import DateParser
 import Date.Extra.Config.Config_en_us as DateConfig
 
-type alias StatusMessage = String
-
-type alias Status =
-    { dateTime : Date
-    , statusMessage : StatusMessage
-    , location : Maybe String
-    }
+import Model exposing (..)
 
 fromString : String -> Result String Date
 fromString dateString =
@@ -67,6 +61,7 @@ statusDecoder =
             |: statusDecoder
             |: locationDecoder
 
+--TODO: This is BPOST specific. Refactor
 parseHttpResponse : String -> Result String (List Status)
 parseHttpResponse responseText =
     let
@@ -76,14 +71,3 @@ parseHttpResponse responseText =
     in
         XD.run statusListDecoder responseText
 
-mostRecentStatus : List Status -> Maybe Status
-mostRecentStatus statusList =
-    let
-        latestDateComparer status =
-            status.dateTime
-                |> Date.toTime
-                |> negate
-
-    in
-        List.sortBy latestDateComparer statusList
-            |> List.head
