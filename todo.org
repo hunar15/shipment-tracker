@@ -1,6 +1,8 @@
 * Necessary functionality for 1.0
-  - [ ] implement storage / sync behavior
-    - [ ] loading of order ids (and possibly latest statuses) being tracked upon startup
+  - [-] implement storage / sync behavior
+    - [X] loading of order ids (and possibly latest statuses) being tracked upon startup
+    - [ ] ability to add new orders
+    - [ ] ability to delete existing orders
     - [ ] explicit button to sync with storage
   - [ ] ability to track new orders through a form
   - [ ] support DHL (for bertrand) / postNl (for lently)

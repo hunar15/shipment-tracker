@@ -1,7 +1,7 @@
 port module Main exposing (..)
 
-import Html exposing (ul, li, button, text, Html, h5, div, small)
-import Html.Attributes exposing (class, classList)
+import Html exposing (ul, li, button, text, Html, h5, div, small, input)
+import Html.Attributes exposing (class, classList, placeholder)
 import Debug exposing (log)
 import Http
 
@@ -70,6 +70,38 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   loadTrackingIds LoadTrackingInformation
 
+newOrderView : Html Msg
+newOrderView =
+    --- TODO is input group actually doing anythin?
+    div [ classList [ ("input-group", True)
+                    , ("input-group-sm", True)
+                    ]]
+
+        [ div [ classList [ ("p-2", True)
+                          , ("col-10", True)
+                          ]
+              ]
+              [ input [ placeholder "Enter id to track"
+                      , classList [ ("form-control", True)
+                                  , ("form-control-sm", True)
+                                  ]
+                      ] []
+              ]
+        , div [ classList [ ("p-2", True)
+                          , ("col-2", True)
+                          ]
+              ]
+              [ button [ classList [ ("btn", True)
+                                   , ("btn-success", True)
+                                   , ("btn-sm", True)
+                                   , ("btn-block", True)
+                                   ]
+                       ]
+                    [ text "Save"]
+              ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
   let
@@ -93,7 +125,11 @@ view model =
                       , ("panel-default", True)]
           ]
           [ ul [ class "list-group" ]
-                (List.map createRow model)
+                ((List.map createRow model) ++
+
+                    [ newOrderView
+                    ]
+                )
           ]
 
 update : Msg -> Model -> (Model, Cmd Msg)
