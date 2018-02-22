@@ -15,6 +15,8 @@ type alias Order = { trackingId : String
                    , statusList : List Status
                    }
 
-type alias Model = List Order
+type alias Model = { activeOrders : List Order
+                   , trackingIdInNewForm : TrackingId
+                   }
 
 type alias TrackingId = String

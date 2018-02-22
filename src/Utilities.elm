@@ -18,29 +18,6 @@ createInitOrders trackingIds =
     in
         List.map createOrderForTrackingId trackingIds
 
-fetchDataForOrders : List Model.Order -> Cmd Msg
-fetchDataForOrders orders =
-    let
-        createTrackingUrl : String -> String
-        createTrackingUrl trackingId =
-            "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
-
-        createCmdForTrackingId : String -> Cmd Msg
-        createCmdForTrackingId trackingId =
-            Http.send
-                (XmlResponse trackingId)
-                (Http.getString (createTrackingUrl trackingId))
-
-        trackingIds : List Model.Order -> List String
-        trackingIds orders =
-            List.map .trackingId orders
-
-        listOfCmds : List Model.Order -> List (Cmd Msg)
-        listOfCmds orders =
-            List.map createCmdForTrackingId (trackingIds orders)
-    in
-        Cmd.batch (listOfCmds orders)
-
 
 mostRecentStatus : List Status -> Maybe Status
 mostRecentStatus statusList =
@@ -64,6 +41,12 @@ updateOrder orderList newOrder =
                 newOrder
             else
                 oldOrder
-
     in
         List.map updater orderList
+
+
+createNewOrder : TrackingId -> Model.Order
+createNewOrder trackingId =
+    { trackingId = trackingId
+    , statusList = []
+    }

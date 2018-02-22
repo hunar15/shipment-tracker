@@ -14,7 +14,10 @@ main =
                , init = init }
 
 init : (Model, Cmd Msg)
-init = ([], Cmd.none)
+init = ({ activeOrders = []
+        , trackingIdInNewForm = ""
+        }
+       , Cmd.none)
 
 
 --- SUBSCRIPTIONS ---

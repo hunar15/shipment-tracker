@@ -1,15 +1,19 @@
 module View exposing (..)
 
 import Html exposing (ul, li, button, text, Html, h5, div, small, input)
-import Html.Attributes exposing (class, classList, placeholder)
+import Html.Attributes exposing (class, classList, placeholder, value)
+import Html.Events exposing (onInput, onClick)
 
 import Model exposing (..)
-import Message exposing (Msg)
+import Message exposing (Msg(..))
 import Utilities
 
-newOrderView : Html Msg
-newOrderView =
+newOrderView : Model -> Html Msg
+newOrderView model =
     --- TODO is input group actually doing anythin?
+    --- TODO current implementation  should reset the form/field when model changes including (TrackingIdChange)
+    --- but that doesnt happen, why?
+
     div [ classList [ ("input-group", True)
                     , ("input-group-sm", True)
                     ]]
@@ -22,6 +26,9 @@ newOrderView =
                       , classList [ ("form-control", True)
                                   , ("form-control-sm", True)
                                   ]
+                          -- setting value here is crucial to making it declarative
+                      , value model.trackingIdInNewForm
+                      , onInput (\newInput -> TrackingIdChanged newInput)
                       ] []
               ]
         , div [ classList [ ("p-2", True)
@@ -33,11 +40,11 @@ newOrderView =
                                    , ("btn-sm", True)
                                    , ("btn-block", True)
                                    ]
+                       , onClick (CreateNewTrackingOrder model.trackingIdInNewForm)
                        ]
                     [ text "Save"]
               ]
         ]
-
 
 
 view : Model -> Html Msg
@@ -63,9 +70,5 @@ view model =
                       , ("panel-default", True)]
           ]
           [ ul [ class "list-group" ]
-                ((List.map createRow model) ++
-
-                    [ newOrderView
-                    ]
-                )
+                ((List.map createRow model.activeOrders) ++ [newOrderView model])
           ]
