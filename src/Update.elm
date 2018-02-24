@@ -2,6 +2,8 @@ module Update exposing (update)
 
 import Debug exposing (log)
 import Http
+import Task
+import Time
 
 import Message exposing (Msg(..))
 import Model exposing (Model)
@@ -54,18 +56,24 @@ update msg model =
             updateActiveOrders m =
                 case submsg of
                     FormMessage.SubmitForm trackingId ->
-                        let
-                            newOrder = Utilities.createNewOrder trackingId
-                        in
-                            ({ m | activeOrders = m.activeOrders ++ [newOrder] }
-                            , fetchDataForOrders [newOrder]
-                            )
+                        (m, Task.perform (\_ -> CreateOrder trackingId) Time.now)
                     _ ->
                         (m, Cmd.none)
+
         in
             model
                 |> updateFormModel
                 |> updateActiveOrders
+
+    CreateOrder trackingId ->
+        let
+            newOrder = Utilities.createNewOrder trackingId
+        in
+            ({ model | activeOrders = model.activeOrders ++ [newOrder] }
+            , fetchDataForOrders [newOrder]
+            )
+
+
 
 
 fetchDataForOrders : List Model.Order -> Cmd Msg
