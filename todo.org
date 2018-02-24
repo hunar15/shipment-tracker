@@ -5,6 +5,8 @@
     - [X] sync newly added orders
     - [ ] ability to delete existing orders
   - [ ] support DHL (for bertrand) / postNl (for lently)
+  - [ ] edit existing orders
+  - [ ] see all the updates for a particular order
 * UI tweaks
   - [ ] show a progress animation (spiral) when fetching the statuses
   - [ ] explicit fetching of statuses for single order or all
