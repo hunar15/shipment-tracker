@@ -1,6 +1,5 @@
 module Update exposing (update)
 
-import Debug exposing (log)
 import Http
 import Task
 import Time
@@ -18,11 +17,9 @@ update msg model =
     XmlResponse trackingId (Ok data) ->
         let
             parseResult = Decoders.parseHttpResponse data
-            loggedData = log "data" data
-            loggedId = log "trackingId" trackingId
         in
-            case (loggedData, loggedId, parseResult) of
-                (_, _,Ok parsedList) ->
+            case parseResult of
+                Ok parsedList ->
                     ({ model
                          | activeOrders =
                              Utilities.updateOrder
@@ -31,8 +28,7 @@ update msg model =
                                  , statusList = parsedList
                                  }}
                     , Cmd.none)
-                (_, _, Err error) ->
-                    log error
+                Err error ->
                     (model, Cmd.none)
 
     XmlResponse _ (Err _) ->
