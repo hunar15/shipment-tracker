@@ -6,6 +6,7 @@ import Model exposing (..)
 import Message exposing (Msg(..))
 import View exposing (view)
 import Update exposing (update)
+import OrderForm.Model exposing (emptyForm)
 
 main =
   Html.program { subscriptions = subscriptions
@@ -15,7 +16,7 @@ main =
 
 init : (Model, Cmd Msg)
 init = ({ activeOrders = []
-        , trackingIdInNewForm = ""
+        , formModel = emptyForm
         }
        , Cmd.none)
 

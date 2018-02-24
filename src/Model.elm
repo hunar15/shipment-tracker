@@ -1,6 +1,7 @@
 module Model exposing (..)
 
 import Date exposing (Date)
+import OrderForm.Model as FormModel
 
 type alias StatusMessage = String
 
@@ -16,7 +17,7 @@ type alias Order = { trackingId : String
                    }
 
 type alias Model = { activeOrders : List Order
-                   , trackingIdInNewForm : TrackingId
+                   , formModel : FormModel.Model
                    }
 
 type alias TrackingId = String

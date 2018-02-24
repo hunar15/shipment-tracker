@@ -4,9 +4,9 @@ import Http
 
 import Model exposing (TrackingId)
 
+import OrderForm.Message
+
 type Msg =
     XmlResponse TrackingId (Result Http.Error String)
     | LoadTrackingInformation (List TrackingId)
-    | TrackingIdChanged TrackingId
-    | CreateNewTrackingOrder TrackingId
-
+    | FormMessage OrderForm.Message.Msg

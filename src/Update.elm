@@ -5,6 +5,8 @@ import Http
 
 import Message exposing (Msg(..))
 import Model exposing (Model)
+import OrderForm.Update as FormUpdate
+import OrderForm.Message as FormMessage
 import Decoders
 import Utilities
 
@@ -16,7 +18,6 @@ update msg model =
             parseResult = Decoders.parseHttpResponse data
             loggedData = log "data" data
             loggedId = log "trackingId" trackingId
-
         in
             case (loggedData, loggedId, parseResult) of
                 (_, _,Ok parsedList) ->
@@ -43,17 +44,28 @@ update msg model =
              , fetchDataForOrders initialOrders
              )
 
-    TrackingIdChanged newTrackingId ->
-        ({model | trackingIdInNewForm = newTrackingId }, Cmd.none)
-
-    CreateNewTrackingOrder trackingId ->
+    FormMessage submsg ->
         let
-            newOrder = Utilities.createNewOrder trackingId
+            updateFormModel : Model -> Model
+            updateFormModel m =
+                { m | formModel = FormUpdate.update submsg model.formModel }
+
+            updateActiveOrders : Model -> (Model, Cmd Msg)
+            updateActiveOrders m =
+                case submsg of
+                    FormMessage.SubmitForm trackingId ->
+                        let
+                            newOrder = Utilities.createNewOrder trackingId
+                        in
+                            ({ m | activeOrders = m.activeOrders ++ [newOrder] }
+                            , fetchDataForOrders [newOrder]
+                            )
+                    _ ->
+                        (m, Cmd.none)
         in
-            ({ model
-                 | activeOrders = model.activeOrders ++ [newOrder]
-             }
-            , fetchDataForOrders [newOrder])
+            model
+                |> updateFormModel
+                |> updateActiveOrders
 
 
 fetchDataForOrders : List Model.Order -> Cmd Msg
