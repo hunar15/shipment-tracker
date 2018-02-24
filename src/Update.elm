@@ -1,4 +1,4 @@
-module Update exposing (update)
+port module Update exposing (update)
 
 import Http
 import Task
@@ -64,13 +64,15 @@ update msg model =
     CreateOrder trackingId ->
         let
             newOrder = Utilities.createNewOrder trackingId
+
+            updatedOrders = model.activeOrders ++ [newOrder]
         in
-            ({ model | activeOrders = model.activeOrders ++ [newOrder] }
-            , fetchDataForOrders [newOrder]
+            ({ model | activeOrders = updatedOrders }
+            , Cmd.batch [ fetchDataForOrders [newOrder]
+                        , updateStorage (List.map .trackingId updatedOrders)]
             )
 
-
-
+port updateStorage : List Model.TrackingId -> Cmd msg
 
 fetchDataForOrders : List Model.Order -> Cmd Msg
 fetchDataForOrders orders =

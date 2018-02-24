@@ -6,3 +6,11 @@ var app = Elm.Main.embed(node);
 chrome.storage.sync.get("trackingIds", function(items) {
     app.ports.loadTrackingIds.send(items['trackingIds']);
 });
+
+app.ports.updateStorage.subscribe(function(trackingIds) {
+    chrome.storage.sync.set({
+        "trackingIds": trackingIds
+    }, function() {
+        console.log("message saved");
+    });
+});
