@@ -1,23 +1,8 @@
 module Model exposing (..)
 
-import Date exposing (Date)
 import OrderForm.Model as FormModel
+import CommonModel
 
-type alias StatusMessage = String
-
-type alias Status =
-    { dateTime : Date
-    , statusMessage : StatusMessage
-    , location : Maybe String
-    }
-
-
-type alias Order = { trackingId : String
-                   , statusList : List Status
-                   }
-
-type alias Model = { activeOrders : List Order
+type alias Model = { activeOrders : List CommonModel.Order
                    , formModel : FormModel.Model
                    }
-
-type alias TrackingId = String

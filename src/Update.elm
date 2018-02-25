@@ -6,17 +6,17 @@ import Time
 
 import Message exposing (Msg(..))
 import Model exposing (Model)
+import CommonModel
 import OrderForm.Update as FormUpdate
 import OrderForm.Message as FormMessage
-import Decoders
 import Utilities
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    XmlResponse trackingId (Ok data) ->
+    XmlResponse vendorInfo trackingId (Ok data) ->
         let
-            parseResult = Decoders.parseHttpResponse data
+            parseResult = vendorInfo.responseDecoder data
         in
             case parseResult of
                 Ok parsedList ->
@@ -25,13 +25,14 @@ update msg model =
                              Utilities.updateOrder
                                  model.activeOrders
                                  { trackingId = trackingId
+                                 , vendor = vendorInfo
                                  , statusList = parsedList
                                  }}
                     , Cmd.none)
                 Err error ->
                     (model, Cmd.none)
 
-    XmlResponse _ (Err _) ->
+    XmlResponse _ _ (Err _) ->
             (model, Cmd.none)
 
     LoadTrackingInformation trackingIds ->
@@ -51,8 +52,8 @@ update msg model =
             updateActiveOrders : Model -> (Model, Cmd Msg)
             updateActiveOrders m =
                 case submsg of
-                    FormMessage.SubmitForm trackingId ->
-                        (m, Task.perform (\_ -> CreateOrder trackingId) Time.now)
+                    FormMessage.SubmitForm vendor trackingId ->
+                        (m, Task.perform (\_ -> CreateOrder vendor trackingId) Time.now)
                     _ ->
                         (m, Cmd.none)
 
@@ -61,9 +62,10 @@ update msg model =
                 |> updateFormModel
                 |> updateActiveOrders
 
-    CreateOrder trackingId ->
+    CreateOrder vendor trackingId ->
         let
-            newOrder = Utilities.createNewOrder trackingId
+            newOrder : CommonModel.Order
+            newOrder = Utilities.createNewOrder trackingId vendor
 
             updatedOrders = model.activeOrders ++ [newOrder]
         in
@@ -74,7 +76,7 @@ update msg model =
 
     DeleteOrder trackingId ->
         let
-            deleteByTrackingId : List Model.Order -> Model.TrackingId -> List Model.Order
+            deleteByTrackingId : List CommonModel.Order -> CommonModel.TrackingId -> List CommonModel.Order
             deleteByTrackingId orders trackingIdToDelete =
                 List.filter (\order -> order.trackingId /= trackingIdToDelete) orders
 
@@ -84,27 +86,27 @@ update msg model =
             , updateStorage (List.map .trackingId updatedOrders))
 
 
-port updateStorage : List Model.TrackingId -> Cmd msg
+port updateStorage : List CommonModel.TrackingId -> Cmd msg
 
-fetchDataForOrders : List Model.Order -> Cmd Msg
+fetchDataForOrders : List CommonModel.Order -> Cmd Msg
 fetchDataForOrders orders =
     let
         createTrackingUrl : String -> String
         createTrackingUrl trackingId =
             "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
 
-        createCmdForTrackingId : String -> Cmd Msg
-        createCmdForTrackingId trackingId =
+        createCmdForOrder : CommonModel.Order -> Cmd Msg
+        createCmdForOrder order =
             Http.send
-                (XmlResponse trackingId)
-                (Http.getString (createTrackingUrl trackingId))
+                (XmlResponse order.vendor order.trackingId)
+                (Http.getString (createTrackingUrl order.trackingId))
 
-        trackingIds : List Model.Order -> List String
-        trackingIds orders =
-            List.map .trackingId orders
+        -- trackingIds : List CommonModel.Order -> List String
+        -- trackingIds orders =
+        --     List.map .trackingId orders
 
-        listOfCmds : List Model.Order -> List (Cmd Msg)
+        listOfCmds : List CommonModel.Order -> List (Cmd Msg)
         listOfCmds orders =
-            List.map createCmdForTrackingId (trackingIds orders)
+            List.map createCmdForOrder orders
     in
         Cmd.batch (listOfCmds orders)

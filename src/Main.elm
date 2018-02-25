@@ -4,6 +4,7 @@ import Html
 
 import Model exposing (..)
 import Message exposing (Msg(..))
+import CommonModel
 import View exposing (view)
 import Update exposing (update)
 import OrderForm.Model exposing (emptyForm)
@@ -23,10 +24,11 @@ init = ({ activeOrders = []
 
 --- SUBSCRIPTIONS ---
 
-port loadTrackingIds : (List TrackingId -> msg) -> Sub msg
+port loadTrackingIds : (List CommonModel.TrackingId -> msg) -> Sub msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   loadTrackingIds LoadTrackingInformation
 
-
+--- initial orders ---
+--- 312014853400000769000219190151 Bpost

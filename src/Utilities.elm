@@ -3,20 +3,15 @@ module Utilities exposing (..)
 import Date exposing (Date)
 import Http
 
-import Model exposing (..)
+import CommonModel as Model exposing (..)
 import Message exposing (Msg(..))
-
+import VendorInfo.Bpost as BpostInfo
 
 createInitOrders : List TrackingId ->  List Model.Order
 createInitOrders trackingIds =
-    let
-        createOrderForTrackingId : String -> Model.Order
-        createOrderForTrackingId id =
-            { trackingId = id
-            , statusList = []
-            }
-    in
-        List.map createOrderForTrackingId trackingIds
+        List.map (\trackingId ->
+                      createNewOrder trackingId bpostInfo)
+            trackingIds
 
 
 mostRecentStatus : List Status -> Maybe Status
@@ -26,7 +21,6 @@ mostRecentStatus statusList =
             status.dateTime
                 |> Date.toTime
                 |> negate
-
     in
         List.sortBy latestDateComparer statusList
             |> List.head
@@ -45,8 +39,24 @@ updateOrder orderList newOrder =
         List.map updater orderList
 
 
-createNewOrder : TrackingId -> Model.Order
-createNewOrder trackingId =
+createNewOrder : TrackingId -> Model.Vendor-> Model.Order
+createNewOrder trackingId vendorInfo =
     { trackingId = trackingId
+    , vendor = vendorInfo
     , statusList = []
     }
+
+-- TODO: remove later
+bpostInfo : Vendor
+bpostInfo =
+    { name = "Bpost"
+     , id = "bpost"
+     , endpointMaker =
+           \trackingId ->
+               "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
+     , responseDecoder = BpostInfo.parseHttpResponse
+     }
+
+supportedVendors : List Vendor
+supportedVendors =
+    [ bpostInfo ]

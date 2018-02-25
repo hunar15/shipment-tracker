@@ -5,6 +5,7 @@ import Html.Attributes exposing (class, classList, placeholder, value, property,
 import Html.Events exposing (onInput, onClick)
 
 import Model exposing (..)
+import CommonModel
 import Message exposing (Msg(..))
 import OrderForm.View as FormView
 import Utilities
@@ -12,7 +13,7 @@ import Utilities
 view : Model -> Html Msg
 view model =
   let
-      createRow : Model.Order -> Html Msg
+      createRow : CommonModel.Order -> Html Msg
       createRow order =
           li [ class "list-group-item" ]
              [ div [ class "row" ]

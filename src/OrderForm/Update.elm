@@ -10,5 +10,7 @@ update msg model =
         TrackingIdChanged newTrackingId ->
             { model | trackingId = newTrackingId }
 
-        SubmitForm _ ->
+        VendorChanged vendor ->
+            { model | selectedVendor = vendor }
+        SubmitForm _ _ ->
             OrderForm.Model.emptyForm

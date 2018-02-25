@@ -2,13 +2,13 @@ module Message exposing (..)
 
 import Http
 
-import Model exposing (TrackingId)
+import CommonModel exposing (..)
 
 import OrderForm.Message
 
 type Msg =
-    XmlResponse TrackingId (Result Http.Error String)
+    XmlResponse Vendor TrackingId (Result Http.Error String)
     | LoadTrackingInformation (List TrackingId)
     | FormMessage OrderForm.Message.Msg
-    | CreateOrder TrackingId
+    | CreateOrder Vendor TrackingId
     | DeleteOrder TrackingId

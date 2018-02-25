@@ -5,7 +5,7 @@ import Test exposing (..)
 
 import Date exposing (Date)
 
-import Model exposing (..)
+import CommonModel exposing (..)
 import Utilities
 
 
@@ -27,13 +27,15 @@ suite =
             }
 
 
-        orderList : List Model.Order
+        orderList : List CommonModel.Order
         orderList =
             [ { trackingId = "o1"
               , statusList = [ status1 ]
+              , vendor = Utilities.bpostInfo
               }
             , { trackingId = "o2"
               , statusList = [ status2, status1 ]
+              , vendor = Utilities.bpostInfo
               }
             ]
     in
@@ -56,6 +58,7 @@ suite =
                                 updatedOrder =
                                     { trackingId = "o1"
                                     , statusList = [ status1, status2 ]
+                                    , vendor = Utilities.bpostInfo
                                     }
                             in
                                 Expect.equal
@@ -63,6 +66,7 @@ suite =
                                     [ updatedOrder
                                     , { trackingId = "o2"
                                       , statusList = [ status2, status1 ]
+                                      , vendor = Utilities.bpostInfo
                                       }
                                     ]
 

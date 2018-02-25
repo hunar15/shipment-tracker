@@ -1,4 +1,4 @@
-module Decoders exposing (..)
+module VendorInfo.Bpost exposing (..)
 
 import Date exposing (Date)
 
@@ -7,7 +7,7 @@ import Xml.Decode.Extra exposing (..)
 import DateParser
 import Date.Extra.Config.Config_en_us as DateConfig
 
-import Model exposing (..)
+import CommonModel exposing (..)
 
 fromString : String -> Result String Date
 fromString dateString =
@@ -31,6 +31,7 @@ dateDecoder =
 statusMessageDecoder : XD.Decoder StatusMessage
 statusMessageDecoder =
     XD.path ["en"] (XD.single XD.string)
+
 
 statusDecoder : XD.Decoder Status
 statusDecoder =
@@ -61,7 +62,6 @@ statusDecoder =
             |: statusDecoder
             |: locationDecoder
 
---TODO: This is BPOST specific. Refactor
 parseHttpResponse : String -> Result String (List Status)
 parseHttpResponse responseText =
     let
@@ -70,4 +70,3 @@ parseHttpResponse responseText =
             XD.path ["parcel", "deliveryStatus", "status"] (XD.list statusDecoder)
     in
         XD.run statusListDecoder responseText
-

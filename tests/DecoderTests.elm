@@ -10,12 +10,12 @@ import Xml.Decode as XD exposing ( path
                            , single
                            , string )
 
-import Decoders exposing (..)
-import Model exposing (..)
+import VendorInfo.Bpost as BpostInfo exposing (..)
+import CommonModel exposing (..)
 
 suite : Test
 suite =
-    describe "Model.Types"
+    describe "Vendor Decoders"
         [ describe "Bpost Response Decoders"
              [ test "can decode xml value into correct type" <|
                   \_ ->
@@ -35,12 +35,12 @@ suite =
                            """
 
                        expectedDateResult : Result String Date
-                       expectedDateResult = Decoders.fromString "07-02-2018 15:30:29"
+                       expectedDateResult = BpostInfo.fromString "07-02-2018 15:30:29"
                    in
                        case expectedDateResult of
                            Ok parsedDate ->
                                Expect.equal
-                                   (XD.run Decoders.statusDecoder xmlString)
+                                   (XD.run BpostInfo.statusDecoder xmlString)
                                    (Ok { dateTime = parsedDate
                                        , statusMessage = "Parcel is handled"
                                        , location = Just "Belgium"
@@ -59,7 +59,7 @@ suite =
                              """
                      in
                          Expect.equal
-                             (XD.run Decoders.statusMessageDecoder xmlString)
+                             (XD.run BpostInfo.statusMessageDecoder xmlString)
                              (Ok "Parcel is handled")
 
              , test "can extract list of statuses from http string response" <|
@@ -115,7 +115,7 @@ suite =
 
                          parseResult : Result String (List Status)
                          parseResult  =
-                                Decoders.parseHttpResponse httpResponse
+                                BpostInfo.parseHttpResponse httpResponse
 
                      in
                          case parseResult of
@@ -131,7 +131,7 @@ suite =
                           dateString = "28-01-2018 16:27:00"
 
                           parsedDate : Result String Date
-                          parsedDate = Decoders.fromString dateString
+                          parsedDate = BpostInfo.fromString dateString
                       in
                           case parsedDate of
                                 Ok date ->

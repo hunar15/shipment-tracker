@@ -1,5 +1,8 @@
 module OrderForm.Message exposing (..)
 
+import CommonModel exposing (..)
+
 type Msg =
-     TrackingIdChanged String
-     | SubmitForm String
+     TrackingIdChanged TrackingId
+     | VendorChanged (Maybe Vendor)
+     | SubmitForm Vendor TrackingId

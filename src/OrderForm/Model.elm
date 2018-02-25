@@ -1,8 +1,14 @@
 module OrderForm.Model exposing (..)
 
+import CommonModel exposing (Vendor)
+
 type alias Model =
-    { trackingId: String }
+    { trackingId: String
+    , selectedVendor : Maybe Vendor
+    }
 
 emptyForm : Model
 emptyForm =
-    { trackingId = "" }
+    { trackingId = ""
+    , selectedVendor = Nothing
+    }

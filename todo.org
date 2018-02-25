@@ -5,6 +5,8 @@
     - [X] sync newly added orders
     - [X] ability to delete existing orders
   - [ ] support DHL (for bertrand) / postNl (for lently)
+    - [ ] support vendor type while saving i.e support encoding to vendor type
+    - [ ] support loading from storage with vendor type
   - [ ] edit existing orders
   - [ ] see all the updates for a particular order
   - [ ] store all order information instead of just tracking Ids
