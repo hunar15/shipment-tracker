@@ -72,6 +72,18 @@ update msg model =
                         , updateStorage (List.map .trackingId updatedOrders)]
             )
 
+    DeleteOrder trackingId ->
+        let
+            deleteByTrackingId : List Model.Order -> Model.TrackingId -> List Model.Order
+            deleteByTrackingId orders trackingIdToDelete =
+                List.filter (\order -> order.trackingId /= trackingIdToDelete) orders
+
+            updatedOrders = deleteByTrackingId model.activeOrders trackingId
+        in
+            ({ model | activeOrders = updatedOrders }
+            , updateStorage (List.map .trackingId updatedOrders))
+
+
 port updateStorage : List Model.TrackingId -> Cmd msg
 
 fetchDataForOrders : List Model.Order -> Cmd Msg

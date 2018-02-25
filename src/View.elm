@@ -1,7 +1,7 @@
 module View exposing (..)
 
-import Html exposing (ul, li, button, text, Html, h5, div, small, input)
-import Html.Attributes exposing (class, classList, placeholder, value)
+import Html exposing (ul, li, button, text, Html, h5, div, small, input, i, a)
+import Html.Attributes exposing (class, classList, placeholder, value, property, href, style)
 import Html.Events exposing (onInput, onClick)
 
 import Model exposing (..)
@@ -20,7 +20,18 @@ view model =
                          [ small []
                                  [ text order.trackingId ]
                          ]
-                   , div [ class "col-6" ]
+                   , div [ class "col-2" ]
+                         [ a [ onClick (DeleteOrder order.trackingId)
+                             , href "#"
+                             , class "text-danger"
+                             ]
+                               [i [ classList [ ("fa", True)
+                                              , ("fa-minus-circle", True)
+                                              ]]
+                                    []
+                               ]
+                         ]
+                   , div [ class "col-4" ]
                          [ text ((Maybe.withDefault "no message available")
                                      (Maybe.map .statusMessage (Utilities.mostRecentStatus order.statusList))
                                 )

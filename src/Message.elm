@@ -11,3 +11,4 @@ type Msg =
     | LoadTrackingInformation (List TrackingId)
     | FormMessage OrderForm.Message.Msg
     | CreateOrder TrackingId
+    | DeleteOrder TrackingId
