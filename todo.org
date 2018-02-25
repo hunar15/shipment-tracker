@@ -1,12 +1,15 @@
 * Necessary functionality for 1.0
-  - [-] implement storage / sync behavior
+  - [X] implement storage / sync behavior
     - [X] loading of order ids (and possibly latest statuses) being tracked upon startup
     - [X] ability to add new orders
     - [X] sync newly added orders
-    - [ ] ability to delete existing orders
+    - [X] ability to delete existing orders
   - [ ] support DHL (for bertrand) / postNl (for lently)
   - [ ] edit existing orders
   - [ ] see all the updates for a particular order
+  - [ ] store all order information instead of just tracking Ids
+  - [ ] brainstorm if localStorage should/can be used for better performance
+    - [ ] especially if it can be used to avoid hitting service APIs all the time
 * UI tweaks
   - [ ] show a progress animation (spiral) when fetching the statuses
   - [ ] explicit fetching of statuses for single order or all
