@@ -10,6 +10,7 @@
   - [ ] store all order information instead of just tracking Ids
   - [ ] brainstorm if localStorage should/can be used for better performance
     - [ ] especially if it can be used to avoid hitting service APIs all the time
+  - [ ] add storage component which elegantly manages data between chrome local and sync storage
 * UI tweaks
   - [ ] show a progress animation (spiral) when fetching the statuses
   - [ ] explicit fetching of statuses for single order or all
