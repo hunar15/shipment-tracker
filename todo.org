@@ -5,6 +5,10 @@
     - [X] sync newly added orders
     - [X] ability to delete existing orders
   - [ ] support DHL (for bertrand) / postNl (for lently)
+    - [ ] store vendor info for bpost along with trackingId
+    - [ ] remove all references to `bpostInfo`
+    - [ ] change `requestMaker` to TrackingId -> HttpRequest from TrackingId -> Url
+    - [ ] support saving/loading data with vendor information
     - [ ] support vendor type while saving i.e support encoding to vendor type
     - [ ] support loading from storage with vendor type
   - [ ] edit existing orders

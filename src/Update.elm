@@ -3,6 +3,7 @@ port module Update exposing (update)
 import Http
 import Task
 import Time
+import Debug exposing (log)
 
 import Message exposing (Msg(..))
 import Model exposing (Model)
@@ -35,13 +36,19 @@ update msg model =
     XmlResponse _ _ (Err _) ->
             (model, Cmd.none)
 
-    LoadTrackingInformation trackingIds ->
+    LoadTrackingInformation storedOrders ->
          let
-             initialOrders = Utilities.createInitOrders trackingIds
+             jsonParseResult = Utilities.createInitOrders loggedStoredOrders
+
+             loggedStoredOrders = log "init orders :" storedOrders
          in
-             ({ model | activeOrders = initialOrders }
-             , fetchDataForOrders initialOrders
-             )
+             case jsonParseResult of
+                 Ok initialOrders ->
+                     ({ model | activeOrders = initialOrders }
+                     , fetchDataForOrders initialOrders
+                     )
+                 Err errorString ->
+                     (model, Cmd.none)
 
     FormMessage submsg ->
         let

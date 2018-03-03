@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 import Html
+import Json.Encode as Json
 
 import Model exposing (..)
 import Message exposing (Msg(..))
@@ -24,7 +25,7 @@ init = ({ activeOrders = []
 
 --- SUBSCRIPTIONS ---
 
-port loadTrackingIds : (List CommonModel.TrackingId -> msg) -> Sub msg
+port loadTrackingIds : (Json.Value -> msg) -> Sub msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =

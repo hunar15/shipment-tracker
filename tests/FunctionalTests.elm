@@ -12,6 +12,14 @@ import Utilities
 suite : Test
 suite =
     let
+        testVendor : Vendor
+        testVendor =
+            { name = "testVendor"
+            , id = "vendorId"
+            , endpointMaker = \_ -> "http://tracking.testVendor.com"
+            , responseDecoder = \_ -> Result.Ok []
+            }
+
         status1 : Status
         status1 =
             { dateTime = Date.fromTime 1000000
@@ -31,11 +39,11 @@ suite =
         orderList =
             [ { trackingId = "o1"
               , statusList = [ status1 ]
-              , vendor = Utilities.bpostInfo
+              , vendor = testVendor
               }
             , { trackingId = "o2"
               , statusList = [ status2, status1 ]
-              , vendor = Utilities.bpostInfo
+              , vendor = testVendor
               }
             ]
     in
@@ -58,7 +66,7 @@ suite =
                                 updatedOrder =
                                     { trackingId = "o1"
                                     , statusList = [ status1, status2 ]
-                                    , vendor = Utilities.bpostInfo
+                                    , vendor = testVendor
                                     }
                             in
                                 Expect.equal
@@ -66,7 +74,7 @@ suite =
                                     [ updatedOrder
                                     , { trackingId = "o2"
                                       , statusList = [ status2, status1 ]
-                                      , vendor = Utilities.bpostInfo
+                                      , vendor = testVendor
                                       }
                                     ]
 

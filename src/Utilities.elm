@@ -1,18 +1,43 @@
 module Utilities exposing (..)
 
 import Date exposing (Date)
-import Http
+import Json.Encode as Json
+import Json.Decode as JsDecode
 
 import CommonModel as Model exposing (..)
-import Message exposing (Msg(..))
 import VendorInfo.Bpost as BpostInfo
 
-createInitOrders : List TrackingId ->  List Model.Order
-createInitOrders trackingIds =
-        List.map (\trackingId ->
-                      createNewOrder trackingId bpostInfo)
-            trackingIds
+createInitOrders : Json.Value ->  Result String (List Model.Order)
+createInitOrders ordersJson =
+    let
+        vendorDecoder : JsDecode.Decoder Vendor
+        vendorDecoder =
+            JsDecode.field "vendorId" JsDecode.string
+                |> JsDecode.andThen (\vendorId ->
+                                         case findVendorInfoById vendorId of
+                                             Just vendor -> JsDecode.succeed vendor
+                                             Nothing -> JsDecode.fail ("couldn't find info for vendor : " ++ vendorId)
+                                    )
 
+        orderDecoder : JsDecode.Decoder Model.Order
+        orderDecoder =
+            JsDecode.map2 (\vendor trackingId -> { trackingId = trackingId
+                                                 , vendor = vendor
+                                                 , statusList = []
+                                                 })
+                vendorDecoder (JsDecode.field "trackingId" JsDecode.string)
+
+
+        orderListDecoder : JsDecode.Decoder (List Model.Order)
+        orderListDecoder =
+            JsDecode.list orderDecoder
+    in
+        JsDecode.decodeValue orderListDecoder ordersJson
+
+findVendorInfoById : String -> Maybe Vendor
+findVendorInfoById vendorId =
+    List.filter (\vendor -> vendor.id == vendorId) supportedVendors
+        |> List.head
 
 mostRecentStatus : List Status -> Maybe Status
 mostRecentStatus statusList =
@@ -47,16 +72,23 @@ createNewOrder trackingId vendorInfo =
     }
 
 -- TODO: remove later
-bpostInfo : Vendor
-bpostInfo =
-    { name = "Bpost"
-     , id = "bpost"
-     , endpointMaker =
-           \trackingId ->
-               "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
-     , responseDecoder = BpostInfo.parseHttpResponse
-     }
+-- bpostInfo : Vendor
+-- bpostInfo =
+--     { name = "Bpost"
+--      , id = "bpost"
+--      , endpointMaker =
+--            \trackingId ->
+--                "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
+--      , responseDecoder = BpostInfo.parseHttpResponse
+--      }
 
 supportedVendors : List Vendor
 supportedVendors =
-    [ bpostInfo ]
+    [ { name = "Bpost"
+      , id = "bpost"
+      , endpointMaker =
+            \trackingId ->
+                "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
+      , responseDecoder = BpostInfo.parseHttpResponse
+      }
+    ]
