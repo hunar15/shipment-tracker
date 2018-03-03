@@ -4,6 +4,7 @@ import Http
 import Task
 import Time
 import Debug exposing (log)
+import Json.Encode as Json
 
 import Message exposing (Msg(..))
 import Model exposing (Model)
@@ -78,7 +79,7 @@ update msg model =
         in
             ({ model | activeOrders = updatedOrders }
             , Cmd.batch [ fetchDataForOrders [newOrder]
-                        , updateStorage (List.map .trackingId updatedOrders)]
+                        , updateStorage (List.map Utilities.createPersistableOrder updatedOrders)]
             )
 
     DeleteOrder trackingId ->
@@ -90,10 +91,10 @@ update msg model =
             updatedOrders = deleteByTrackingId model.activeOrders trackingId
         in
             ({ model | activeOrders = updatedOrders }
-            , updateStorage (List.map .trackingId updatedOrders))
+            , updateStorage (List.map Utilities.createPersistableOrder updatedOrders))
 
 
-port updateStorage : List CommonModel.TrackingId -> Cmd msg
+port updateStorage : List Json.Value -> Cmd msg
 
 fetchDataForOrders : List CommonModel.Order -> Cmd Msg
 fetchDataForOrders orders =

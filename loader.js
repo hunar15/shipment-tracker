@@ -7,10 +7,10 @@ chrome.storage.local.get("orders", function(items) {
     app.ports.loadTrackingIds.send(items['orders']);
 });
 
-app.ports.updateStorage.subscribe(function(trackingIds) {
+app.ports.updateStorage.subscribe(function(orders) {
     chrome.storage.local.set({
-        "trackingIds": trackingIds
+        "orders": orders
     }, function() {
-        console.log("message saved");
+        console.log("message saved", orders);
     });
 });

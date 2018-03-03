@@ -34,6 +34,12 @@ createInitOrders ordersJson =
     in
         JsDecode.decodeValue orderListDecoder ordersJson
 
+createPersistableOrder : Model.Order -> Json.Value
+createPersistableOrder order =
+    Json.object [ ("trackingId", Json.string order.trackingId)
+                , ("vendorId", Json.string order.vendor.id)
+                ]
+
 findVendorInfoById : String -> Maybe Vendor
 findVendorInfoById vendorId =
     List.filter (\vendor -> vendor.id == vendorId) supportedVendors
