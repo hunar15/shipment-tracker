@@ -2,6 +2,8 @@ port module Main exposing (..)
 
 import Html
 import Json.Encode as Json
+import Task
+import Time
 
 import Model exposing (..)
 import Message exposing (Msg(..))
@@ -18,10 +20,14 @@ main =
 
 init : (Model, Cmd Msg)
 init = ({ activeOrders = []
+        , aftershipOrders = []
         , formModel = emptyForm
+        , errorMessage = ""
         }
-       , Cmd.none)
+       , Task.perform (\_ -> FetchAftershipOrders aftershipApiKey) Time.now)
 
+aftershipApiKey : String
+aftershipApiKey = "1107b760-aa92-4eda-8c1d-132aab782b88"
 
 --- SUBSCRIPTIONS ---
 

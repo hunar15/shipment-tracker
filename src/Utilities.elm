@@ -3,6 +3,7 @@ module Utilities exposing (..)
 import Date exposing (Date)
 import Json.Encode as Json
 import Json.Decode as JsDecode
+import Http
 
 import CommonModel as Model exposing (..)
 import VendorInfo.Bpost as BpostInfo
@@ -77,17 +78,6 @@ createNewOrder trackingId vendorInfo =
     , statusList = []
     }
 
--- TODO: remove later
--- bpostInfo : Vendor
--- bpostInfo =
---     { name = "Bpost"
---      , id = "bpost"
---      , endpointMaker =
---            \trackingId ->
---                "http://www.bpost2.be/bpostinternational/track_trace/find.php?search=s&lng=en&trackcode=" ++ trackingId
---      , responseDecoder = BpostInfo.parseHttpResponse
---      }
-
 supportedVendors : List Vendor
 supportedVendors =
     [ { name = "Bpost"
@@ -98,3 +88,16 @@ supportedVendors =
       , responseDecoder = BpostInfo.parseHttpResponse
       }
     ]
+
+
+httpRequestForAftershipOrders : String -> Http.Request Json.Value
+httpRequestForAftershipOrders apiKey =
+    Http.request { method = "GET"
+                 , headers = [Http.header "aftership-api-key" apiKey]
+                 , body = Http.emptyBody
+                 , timeout = Nothing
+                 , url = "https://api.aftership.com/v4/trackings"
+                 , expect = Http.expectJson JsDecode.value
+                 , withCredentials = False
+                 }
+

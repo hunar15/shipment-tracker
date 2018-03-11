@@ -11,6 +11,7 @@ import Model exposing (Model)
 import CommonModel
 import OrderForm.Update as FormUpdate
 import OrderForm.Message as FormMessage
+import VendorInfo.Aftership as Aftership
 import Utilities
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -93,6 +94,44 @@ update msg model =
             ({ model | activeOrders = updatedOrders }
             , updateStorage (List.map Utilities.createPersistableOrder updatedOrders))
 
+    FetchAftershipOrders aftershipApiKey ->
+        let
+            responseHandler : Result Http.Error Json.Value -> Msg
+            responseHandler result =
+                case result of
+                    Ok responseString -> LoadAftershipOrders responseString
+                    Err httpError ->
+                        ShowError ("error encountered while fetching orders" ++ (toString httpError))
+        in
+            ( model
+            , Http.send
+                 responseHandler
+                 (Utilities.httpRequestForAftershipOrders aftershipApiKey)
+            )
+
+    LoadAftershipOrders jsonResponse ->
+        let
+            loggedMessage = log "aftership response : " (toString jsonResponse)
+
+            parseResult = Aftership.parseJson jsonResponse
+        in
+            case parseResult of
+                Ok parsedOrders ->
+                    ({ model | aftershipOrders = parsedOrders }
+                    , Cmd.none
+                    )
+                Err parseErrorMessage ->
+                    ( model
+                    , Task.perform (\_ -> ShowError parseErrorMessage) Time.now
+                    )
+
+    ShowError errorMessage ->
+        let
+            loggedMessage = log "error message : " errorMessage
+        in
+            ({ model | errorMessage = loggedMessage }
+            , Cmd.none
+            )
 
 port updateStorage : List Json.Value -> Cmd msg
 
@@ -108,10 +147,6 @@ fetchDataForOrders orders =
             Http.send
                 (XmlResponse order.vendor order.trackingId)
                 (Http.getString (createTrackingUrl order.trackingId))
-
-        -- trackingIds : List CommonModel.Order -> List String
-        -- trackingIds orders =
-        --     List.map .trackingId orders
 
         listOfCmds : List CommonModel.Order -> List (Cmd Msg)
         listOfCmds orders =

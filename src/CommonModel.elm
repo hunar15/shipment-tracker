@@ -12,6 +12,13 @@ type alias Order =
     , statusList : List Status
     }
 
+type alias AftershipOrder =
+    { trackingId : String
+    , trackingNumber: String
+    , slugId : String
+    , statusList : List Status
+    }
+
 type alias Status =
     { dateTime : Date
     , statusMessage : StatusMessage
