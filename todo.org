@@ -12,7 +12,12 @@
     - [X] support loading from storage with vendor type
     - [X] load orders being tracked on Aftership
     - [X] display Aftership orders
-    - [ ] change `requestMaker` to TrackingId -> HttpRequest from TrackingId -> Url
+    - [ ] create new aftership orders
+      - [ ] dhl
+      - [ ] postnl
+    - [ ] delete existing aftership orders
+    - [ ] use aftership for bpost orders
+    - [ ] see if local/sync storage has any use. remove otherwise.
   - [ ] edit existing orders
   - [ ] see all the updates for a particular order
   - [ ] store all order information instead of just tracking Ids
