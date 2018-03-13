@@ -76,7 +76,7 @@ suite =
                         "slug": "dhl",
                         "city": null,
                         "created_at": "2014-06-25T07:33:53+00:00",
-                        "country_name": "VALENCIA - SPAIN",
+                        "country_name": null,
                         "message": "Awaiting collection by recipient as requested",
                         "country_iso3": null,
                         "tag": "InTransit",
@@ -126,7 +126,7 @@ suite =
                                                                            (\status ->
                                                                                Expect.all
                                                                                    [ \s -> Expect.equal s.statusMessage "Awaiting collection by recipient as requested"
-                                                                                   , \s -> Expect.equal s.location (Just "VALENCIA - SPAIN")
+                                                                                   , \s -> Expect.equal s.location Nothing
                                                                                    , \s -> Expect.equal (Date.day (s.dateTime)) 12
                                                                                    , \s -> Expect.equal (Date.month (s.dateTime)) Date.May
                                                                                    , \s -> Expect.equal (Date.year (s.dateTime)) 2014

@@ -10,7 +10,8 @@
     - [X] support saving/loading data with vendor information
     - [X] support vendor type while saving i.e support encoding to vendor type
     - [X] support loading from storage with vendor type
-    - [ ] load orders being tracked on Aftership
+    - [X] load orders being tracked on Aftership
+    - [X] display Aftership orders
     - [ ] change `requestMaker` to TrackingId -> HttpRequest from TrackingId -> Url
   - [ ] edit existing orders
   - [ ] see all the updates for a particular order

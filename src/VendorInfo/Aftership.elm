@@ -12,6 +12,7 @@ import Json.Decode exposing ( Decoder
                             , string
                             , succeed
                             , andThen
+                            , nullable
                             )
 import Date exposing ( Date )
 
@@ -51,18 +52,18 @@ dateTimeDecoder =
 statusDecoder : Decoder Status
 statusDecoder =
     let
-        assembler : Date -> String -> String -> Status
+        assembler : Date -> String -> Maybe String -> Status
         assembler date message location =
             { dateTime = date
             , statusMessage = message
-            , location = Just location
+            , location = location
             }
     in
         map3
             assembler
             (at ["checkpoint_time"] dateTimeDecoder)
             (at ["message"] string)
-            (at ["country_name"] string)
+            (at ["country_name"] (nullable string))
 
 trackingDecoder : Decoder AftershipOrder
 trackingDecoder =
