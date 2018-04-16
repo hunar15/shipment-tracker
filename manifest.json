@@ -24,6 +24,7 @@
         "activeTab",
         "tabs",
         "storage",
-        "http://www.bpost2.be/"
+        "http://www.bpost2.be/",
+        "https://api.aftership.com/"
     ]
 }

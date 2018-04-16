@@ -53,7 +53,7 @@ view model =
                                  [ text order.trackingNumber ]
                          ]
                    , div [ class "col-2" ]
-                         [ a [ onClick (DeleteOrder order.trackingId)
+                         [ a [ onClick (DeleteAftershipOrder order.trackingId)
                              , href "#"
                              , class "text-danger"
                              ]

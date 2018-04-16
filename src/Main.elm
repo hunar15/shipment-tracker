@@ -23,8 +23,9 @@ init = ({ activeOrders = []
         , aftershipOrders = []
         , formModel = emptyForm
         , errorMessage = ""
+        , aftershipApiKey = aftershipApiKey
         }
-       , Task.perform (\_ -> FetchAftershipOrders aftershipApiKey) Time.now)
+       , Task.perform (\_ -> FetchAftershipOrders) Time.now)
 
 aftershipApiKey : String
 aftershipApiKey = "1107b760-aa92-4eda-8c1d-132aab782b88"

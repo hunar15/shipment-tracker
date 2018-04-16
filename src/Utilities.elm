@@ -101,3 +101,15 @@ httpRequestForAftershipOrders apiKey =
                  , withCredentials = False
                  }
 
+
+deleteAftershipOrderRequest : String -> String -> Http.Request Json.Value
+deleteAftershipOrderRequest apiKey trackingId =
+    Http.request { method = "DELETE"
+                 , headers = [Http.header "aftership-api-key" apiKey]
+                 , body = Http.emptyBody
+                 , timeout = Nothing
+                 , url = "https://api.aftership.com/v4/trackings/" ++ trackingId
+                 , expect = Http.expectJson JsDecode.value
+                 , withCredentials = False
+                 }
+

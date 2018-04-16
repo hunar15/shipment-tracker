@@ -40,9 +40,7 @@ update msg model =
 
     LoadTrackingInformation storedOrders ->
          let
-             jsonParseResult = Utilities.createInitOrders loggedStoredOrders
-
-             loggedStoredOrders = log "init orders :" storedOrders
+             jsonParseResult = Utilities.createInitOrders storedOrders
          in
              case jsonParseResult of
                  Ok initialOrders ->
@@ -94,7 +92,24 @@ update msg model =
             ({ model | activeOrders = updatedOrders }
             , updateStorage (List.map Utilities.createPersistableOrder updatedOrders))
 
-    FetchAftershipOrders aftershipApiKey ->
+    DeleteAftershipOrder trackingId ->
+        let
+            responseHandler : Result Http.Error Json.Value -> Msg
+            responseHandler result =
+                case result of
+                    Ok _ ->
+                        FetchAftershipOrders
+                    Err httpError ->
+                        ShowError ("error encountered while deleting orders" ++ (toString httpError))
+
+        in
+            ( model
+            , Http.send
+                responseHandler
+                (Utilities.deleteAftershipOrderRequest model.aftershipApiKey trackingId)
+            )
+
+    FetchAftershipOrders ->
         let
             responseHandler : Result Http.Error Json.Value -> Msg
             responseHandler result =
@@ -106,13 +121,11 @@ update msg model =
             ( model
             , Http.send
                  responseHandler
-                 (Utilities.httpRequestForAftershipOrders aftershipApiKey)
+                 (Utilities.httpRequestForAftershipOrders model.aftershipApiKey)
             )
 
     LoadAftershipOrders jsonResponse ->
         let
-            loggedMessage = log "aftership response : " (toString jsonResponse)
-
             parseResult = Aftership.parseJson jsonResponse
         in
             case parseResult of

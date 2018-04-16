@@ -12,10 +12,14 @@
     - [X] support loading from storage with vendor type
     - [X] load orders being tracked on Aftership
     - [X] display Aftership orders
+    - [ ] delete existing aftership orders
+      - [ ] how to bypass CORS restrictions
+        - [ ] create mini proxy service which allows cors (or check if one already exists)
+        - [ ] see if chrome extensions/apps have any ways of dealing with cors (apart from "permissions")
+        - [ ] can we get around by not having DELETE as a functionality
     - [ ] create new aftership orders
       - [ ] dhl
       - [ ] postnl
-    - [ ] delete existing aftership orders
     - [ ] use aftership for bpost orders
     - [ ] see if local/sync storage has any use. remove otherwise.
   - [ ] edit existing orders

@@ -5,6 +5,7 @@ import Date exposing (Date)
 type alias TrackingId = String
 type alias ApiResponse = String
 type alias StatusMessage = String
+type alias AftershipId = String
 
 type alias Order =
     { trackingId : String

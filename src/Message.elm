@@ -12,6 +12,7 @@ type Msg =
     | FormMessage OrderForm.Message.Msg
     | CreateOrder Vendor TrackingId
     | DeleteOrder TrackingId
-    | FetchAftershipOrders String
+    | DeleteAftershipOrder AftershipId
+    | FetchAftershipOrders
     | LoadAftershipOrders Json.Value
     | ShowError String
